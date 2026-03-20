@@ -1,25 +1,27 @@
 public class Main {
 
-    public static int quickSort_timeMs(int[] arrayType, SortingAlgorithms.PivotStrategy pivotStrategy) {
+    public static void quickSort_Operations(int[] arrayType, SortingAlgorithms.PivotStrategy pivotStrategy,String fileName) {
         int[] temp = arrayType.clone();
         long startTime = System.currentTimeMillis();
         SortingAlgorithms.quickSort(temp,0,arrayType.length-1, pivotStrategy);
         long endTime = System.currentTimeMillis();
-        return (int)(endTime - startTime);
+        System.out.println("Total time of " + fileName + ": " +(int)(endTime - startTime)+" ms");
+        FileOperations.writeArrayToFile(fileName,temp);
     }
 
-    public static int timSort_timeMs(int[] arrayType,int x){
+    public static void timSort_Operations(int[] arrayType,int x,String fileName){
         int[] temp = arrayType.clone();
         long startTime = System.currentTimeMillis();
         SortingAlgorithms.mergeSort(temp,0,arrayType.length-1,x);
         long endTime = System.currentTimeMillis();
-        return (int)(endTime - startTime);
+        System.out.println("Total time of " + fileName + ": " +(int)(endTime - startTime)+" ms");
+        FileOperations.writeArrayToFile(fileName,temp);
     }
 
     public static void main(String[] args){
 
-        int[] randomArray = FileOperations.loadFile_generateArray("random.txt");
-        int[] semi_orderedArray = FileOperations.loadFile_generateArray("semi_ordered.txt");
+        int[] randomArray = FileOperations.loadFileIntoArray("random.txt");
+        int[] semi_orderedArray = FileOperations.loadFileIntoArray("semi_ordered.txt");
         int[] increasingArray = new int[1000000];
         int[] decreasingArray = new int[1000000];
 
@@ -29,65 +31,32 @@ public class Main {
             decreasingArray[decreasingArray.length-i-1] = i;
         }
 
-
-
-
-        System.out.println("Total time of timSorted_randomArray: " + timSort_timeMs(randomArray,64) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_first: " + quickSort_timeMs(randomArray, SortingAlgorithms.PivotStrategy.FIRST) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_last: " + quickSort_timeMs(randomArray, SortingAlgorithms.PivotStrategy.LAST) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_middle: " + quickSort_timeMs(randomArray, SortingAlgorithms.PivotStrategy.MIDDLE) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_random: " + quickSort_timeMs(randomArray, SortingAlgorithms.PivotStrategy.RANDOM) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_median: " + quickSort_timeMs(randomArray, SortingAlgorithms.PivotStrategy.MEDIAN) + " ms");
-
+        timSort_Operations(randomArray,64,"timsort_random_out.txt");
+        quickSort_Operations(randomArray, SortingAlgorithms.PivotStrategy.FIRST,"quicksort_first_random_out.txt");
+        quickSort_Operations(randomArray, SortingAlgorithms.PivotStrategy.LAST,"quicksort_last_random_out.txt");
+        quickSort_Operations(randomArray, SortingAlgorithms.PivotStrategy.MIDDLE,"quicksort_middle_random_out.txt");
+        quickSort_Operations(randomArray, SortingAlgorithms.PivotStrategy.RANDOM,"quicksort_random_random_out.txt");
+        quickSort_Operations(randomArray, SortingAlgorithms.PivotStrategy.MEDIAN,"quicksort_median_random_out.txt");
         System.out.println();
-
-        System.out.println("Total time of timSorted_randomArray: " + timSort_timeMs(semi_orderedArray,64) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_first: " + quickSort_timeMs(semi_orderedArray, SortingAlgorithms.PivotStrategy.FIRST) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_last: " + quickSort_timeMs(semi_orderedArray, SortingAlgorithms.PivotStrategy.LAST) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_middle: " + quickSort_timeMs(semi_orderedArray, SortingAlgorithms.PivotStrategy.MIDDLE) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_random: " + quickSort_timeMs(semi_orderedArray, SortingAlgorithms.PivotStrategy.RANDOM) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_median: " + quickSort_timeMs(semi_orderedArray, SortingAlgorithms.PivotStrategy.MEDIAN) + " ms");
-
+        timSort_Operations(semi_orderedArray,64,"timsort_semi_ordered_out.txt");
+        quickSort_Operations(semi_orderedArray, SortingAlgorithms.PivotStrategy.FIRST,"quicksort_first_semi_ordered_out.txt");
+        quickSort_Operations(semi_orderedArray, SortingAlgorithms.PivotStrategy.LAST,"quicksort_last_semi_ordered_out.txt");
+        quickSort_Operations(semi_orderedArray, SortingAlgorithms.PivotStrategy.MIDDLE,"quicksort_middle_semi_ordered_out.txt");
+        quickSort_Operations(semi_orderedArray, SortingAlgorithms.PivotStrategy.RANDOM,"quicksort_random_semi_ordered_out.txt");
+        quickSort_Operations(semi_orderedArray, SortingAlgorithms.PivotStrategy.MEDIAN,"quicksort_median_semi_ordered_out.txt");
         System.out.println();
-
-        System.out.println("Total time of timSorted_randomArray: " + timSort_timeMs(increasingArray,64) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_first: " + quickSort_timeMs(increasingArray, SortingAlgorithms.PivotStrategy.FIRST) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_last: " + quickSort_timeMs(increasingArray, SortingAlgorithms.PivotStrategy.LAST) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_middle: " + quickSort_timeMs(increasingArray, SortingAlgorithms.PivotStrategy.MIDDLE) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_random: " + quickSort_timeMs(increasingArray, SortingAlgorithms.PivotStrategy.RANDOM) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_median: " + quickSort_timeMs(increasingArray, SortingAlgorithms.PivotStrategy.MEDIAN) + " ms");
-
+        timSort_Operations(increasingArray,64,"timsort_increasing_out.txt");
+        quickSort_Operations(increasingArray, SortingAlgorithms.PivotStrategy.FIRST,"quicksort_first_increasing_out.txt");
+        quickSort_Operations(increasingArray, SortingAlgorithms.PivotStrategy.LAST,"quicksort_last_increasing_out.txt");
+        quickSort_Operations(increasingArray, SortingAlgorithms.PivotStrategy.MIDDLE,"quicksort_middle_increasing_out.txt");
+        quickSort_Operations(increasingArray, SortingAlgorithms.PivotStrategy.RANDOM,"quicksort_random_increasing_out.txt");
+        quickSort_Operations(increasingArray, SortingAlgorithms.PivotStrategy.MEDIAN,"quicksort_median_increasing_out.txt");
         System.out.println();
-
-        System.out.println("Total time of timSorted_randomArray: " + timSort_timeMs(decreasingArray,64) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_first: " + quickSort_timeMs(decreasingArray, SortingAlgorithms.PivotStrategy.FIRST) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_last: " + quickSort_timeMs(decreasingArray, SortingAlgorithms.PivotStrategy.LAST) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_middle: " + quickSort_timeMs(decreasingArray, SortingAlgorithms.PivotStrategy.MIDDLE) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_random: " + quickSort_timeMs(decreasingArray, SortingAlgorithms.PivotStrategy.RANDOM) + " ms");
-
-        System.out.println("Total time of quickSorted_randomArray_median: " + quickSort_timeMs(decreasingArray, SortingAlgorithms.PivotStrategy.MEDIAN) + " ms");
-
-        System.out.println();
-
-
+        timSort_Operations(decreasingArray,64,"timsort_decreasing_out.txt");
+        quickSort_Operations(decreasingArray, SortingAlgorithms.PivotStrategy.FIRST,"quicksort_first_decreasing_out.txt");
+        quickSort_Operations(decreasingArray, SortingAlgorithms.PivotStrategy.LAST,"quicksort_last_decreasing_out.txt");
+        quickSort_Operations(decreasingArray, SortingAlgorithms.PivotStrategy.MIDDLE,"quicksort_middle_decreasing_out.txt");
+        quickSort_Operations(decreasingArray, SortingAlgorithms.PivotStrategy.RANDOM,"quicksort_random_decreasing_out.txt");
+        quickSort_Operations(decreasingArray, SortingAlgorithms.PivotStrategy.MEDIAN,"quicksort_median_decreasing_out.txt");
     }
 }

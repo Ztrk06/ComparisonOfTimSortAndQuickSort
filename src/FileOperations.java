@@ -1,11 +1,8 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 public class FileOperations {
 
-    public static int[] loadFile_generateArray(String path){
+    public static int[] loadFileIntoArray(String path){
         int[] million_array = new int[1000000];
         int index = 0;
 
@@ -26,5 +23,14 @@ public class FileOperations {
         return million_array;
     }
 
+    public static void writeArrayToFile(String fileName, int[] arr){
+        try (BufferedWriter bufferwriter = new BufferedWriter(new FileWriter(fileName))) {
+            for (int i = 0; i < arr.length; i++) {
+                bufferwriter.write(arr[i] + "\n");
+            }
+        } catch (IOException e) {
+            System.out.println("Error while writing file !" + e.getMessage());
+        }
+    }
 
 }
