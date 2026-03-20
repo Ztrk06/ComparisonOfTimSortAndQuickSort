@@ -8,7 +8,7 @@ public class SortingAlgorithms {
         MEDIAN
     }
 
-    public static int partition(int[] arr, int low, int high) {
+    private static int partition(int[] arr, int low, int high) {
         int pivot = arr[high];
         int i = low - 1;
         for (int j = low; j < high; j++) {
@@ -64,9 +64,72 @@ public class SortingAlgorithms {
     }
 
     private static int median(int[] arr,int a, int b, int c) {
-        if ((arr[a] - arr[b]) * (arr[c] - arr[a]) >= 0) return a;
-        else if ((arr[b] - arr[a]) * (arr[c] - arr[b]) >= 0) return b;
-        else return c;
+        int valA = arr[a];
+        int valB = arr[b];
+        int valC = arr[c];
+
+        if ((valA >= valB && valA <= valC) || (valA >= valC && valA <= valB)) return a;
+        if ((valB >= valA && valB <= valC) || (valB >= valC && valB <= valA)) return b;
+        return c;
     }
 
+    private static void merge(int[] arr, int low, int mid, int high) {
+        int n1 = mid - low + 1;
+        int n2 = high - mid;
+        int[] left = new int[n1];
+        int[] right = new int[n2];
+        for (int i = 0; i < n1; i++) {
+            left[i] = arr[low + i];
+        }
+        for (int i = 0; i < n2; i++) {
+            right[i] = arr[mid + 1 + i];
+        }
+        int i = 0, j = 0;
+        int k = low;
+        while (i < n1 && j < n2) {
+            if (left[i] <= right[j]) {
+                arr[k] = left[i];
+                i++;
+            }
+            else {
+                arr[k] = right[j];
+                j++;
+            }
+            k++;
+        }
+        while (i < n1) {
+            arr[k] = left[i];
+            i++;
+            k++;
+        }
+        while (j < n2) {
+            arr[k] = right[j];
+            j++;
+            k++;
+        }
+    }
+
+    public static void mergeSort(int[] arr, int low, int high, int x) {
+        if (x < high-low + 1) {
+            int mid = low + (high - low) / 2;
+            mergeSort(arr, low, mid, x);
+            mergeSort(arr, mid + 1, high, x);
+            merge(arr, low, mid, high);
+        }
+        else {
+            insertionSort(arr, low, high);
+        }
+    }
+
+    private static void insertionSort(int[] arr, int low, int high) {
+        for (int i = low + 1; i <= high; i++) {
+            int key = arr[i];
+            int j = i - 1;
+            while (j >= low && arr[j] > key) {
+                arr[j+1] = arr[j];
+                j =  j - 1;
+            }
+            arr[j+1] = key;
+        }
+    }
 }
