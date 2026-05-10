@@ -1,42 +1,73 @@
-# Assignment 1 — Comparison of TimSort and QuickSort
+# Comparison of TimSort and QuickSort
 
-> **CME 2204 Algorithm Analysis** | 2025–2026 Spring
+> **CME 2204 Algorithm Analysis** | Dokuz Eylül University | 2025–2026 Spring
 
 ## Overview
 
-This project implements and benchmarks two sorting algorithms — **TimSort** and **QuickSort** — across four different input types with 1,000,000 integers each. The goal is to compare their real-world performance and understand when each algorithm excels or struggles.
+Empirical performance comparison of **TimSort** and **QuickSort** (5 pivot strategies) on 1,000,000 integers across four input distributions. Execution times are measured in milliseconds, excluding file I/O. All sorted outputs are written to disk as `.txt` files.
 
-## Algorithms Implemented
+---
+
+## Algorithms
 
 ### TimSort
-A hybrid, stable sorting algorithm derived from Merge Sort and Insertion Sort (designed by Tim Peters in 2002). Steps:
-1. Break the array into small chunks called **runs** (size 32 or 64).
-2. Sort each run using **Insertion Sort**.
-3. Merge all runs using **Merge Sort**, doubling the merged subarray size each iteration.
-4. If the array is smaller than 64 elements, use Insertion Sort directly.
+A hybrid, stable sorting algorithm combining Insertion Sort and Merge Sort.
 
-### QuickSort (5 pivot strategies)
-A divide-and-conquer algorithm that partitions the array around a pivot element. Implemented with the following pivot selection strategies:
-- First element
-- Last element
-- Middle element
-- Random element
-- Median element
+- `minrun = 64` — sub-arrays of 64 or fewer elements are sorted with Insertion Sort.
+- Larger arrays are recursively merged with Merge Sort.
+- If the full array fits within `minrun`, only Insertion Sort is applied.
 
-## Input Files
+| Complexity | Value |
+|------------|-------|
+| Best case  | O(n) |
+| Average / Worst | O(n log n) |
+| Space | O(n) |
 
-| File | Description |
-|------|-------------|
-| `random.txt` | 1,000,000 random integers |
-| `semi_ordered.txt` | 1,000,000 semi-ordered integers |
-| *(generated in code)* | 1,000,000 increasing integers |
-| *(generated in code)* | 1,000,000 decreasing integers |
+### QuickSort
+A divide-and-conquer algorithm using a pivot to partition the array. Five pivot strategies are implemented:
 
-> Place `random.txt` and `semi_ordered.txt` in the project root directory.
+| Strategy | Description |
+|----------|-------------|
+| `FIRST` | Always picks `arr[low]` |
+| `LAST` | Always picks `arr[high]` |
+| `MIDDLE` | Picks `arr[low + (high−low)/2]` |
+| `RANDOM` | Picks a uniformly random index in `[low, high]` |
+| `MEDIAN` | Median-of-three: `arr[low]`, `arr[mid]`, `arr[high]` |
+
+> ⚠️ `FIRST` and `LAST` strategies degrade to **O(n²)** on sorted/reverse-sorted inputs. The JVM stack was expanded with `-Xss200m` to prevent `StackOverflowError` at n = 1,000,000.
+
+---
+
+## Project Structure
+
+```
+├── src/
+│   ├── Main.java               # Entry point; timing, cloning, output
+│   ├── SortingAlgorithms.java  # TimSort + QuickSort implementations
+│   └── FileOperations.java     # File reading and writing utilities
+├── random.txt                  # Input: 1,000,000 random integers
+├── semi_ordered.txt            # Input: 1,000,000 semi-ordered integers
+└── output/                     # 24 sorted output files
+```
+
+---
+
+## Input Datasets
+
+| Dataset | Source |
+|---------|--------|
+| Random | Loaded from `random.txt` |
+| Semi-ordered | Loaded from `semi_ordered.txt` |
+| Increasing | Generated in code: `arr[i] = i` |
+| Decreasing | Generated in code: `arr[n−i−1] = i` |
+
+Each array is **cloned** before every sort call to ensure all algorithms operate on identical input.
+
+---
 
 ## Output Files
 
-24 output files are generated using the naming convention:
+24 output files are generated using this naming convention:
 
 ```
 (algorithm)_(data_type)_out.txt
@@ -45,38 +76,57 @@ A divide-and-conquer algorithm that partitions the array around a pivot element.
 **Examples:**
 ```
 timsort_random_out.txt
-quicksort_first_random_out.txt
+quicksort_first_increasing_out.txt
 quicksort_median_decreasing_out.txt
 ```
 
 **Algorithm names:** `timsort`, `quicksort_first`, `quicksort_last`, `quicksort_middle`, `quicksort_random`, `quicksort_median`  
 **Data types:** `random`, `semi_ordered`, `increasing`, `decreasing`
 
+---
+
 ## How to Run
 
+Place `random.txt` and `semi_ordered.txt` in the project root, then:
+
 ```bash
-javac Main.java
-java Main
+javac src/*.java -d out/
+java -Xss200m -cp out/ Main
 ```
 
-> **Note:** Array creation time and file I/O time are excluded from sorting benchmarks. Only the sorting algorithm's execution time is measured (in milliseconds).
+> The `-Xss200m` flag is required to handle the deep recursion of worst-case QuickSort (first/last pivot on sorted inputs).
 
-## Performance Comparison Table
+---
+
+## Results
+
+Performance comparison matrix (in milliseconds):
 
 | Algorithm | Random | Semi-Ordered | Increasing | Decreasing |
-|-----------|--------|--------------|------------|------------|
-| TimSort | | | | |
-| QuickSort (First) | | | | |
-| QuickSort (Last) | | | | |
-| QuickSort (Middle) | | | | |
-| QuickSort (Random) | | | | |
-| QuickSort (Median) | | | | |
+|-----------|-------:|-------------:|-----------:|-----------:|
+| **TimSort** | 192 | 94 | 46 | 60 |
+| QuickSort – First | 131 | 112 | 366,672 | 522,964 |
+| QuickSort – Last | 119 | 94 | 866,110 | 606,434 |
+| QuickSort – Middle | 127 | 100 | 26 | 29 |
+| QuickSort – Random | 141 | 111 | 62 | 68 |
+| QuickSort – Median | 127 | 94 | **26** | 57 |
 
-## Grading
+> Hardware: AMD Ryzen 7 7840HS, 32 GB RAM, SSD, Windows 11, OpenJDK 25.0.2
 
-| Component | Weight |
-|-----------|--------|
-| TimSort implementation | 30% |
-| QuickSort implementation | 30% |
-| File I/O | 10% |
-| Report | 30% |
+---
+
+## Key Findings
+
+- **Fastest overall:** QuickSort Middle & QuickSort Median — both at **26 ms** on increasing input.
+- **Slowest overall:** QuickSort Last on increasing input — **866,110 ms (~14.4 min)** due to O(n²) degeneration.
+- **Most consistent:** Median-of-three never degenerates across any tested distribution.
+- **Best for unknown/partially sorted input:** TimSort — predictable range of 46–192 ms across all distributions.
+- **Best for random data:** QuickSort Last at 119 ms, benefiting from cache efficiency on uniform distributions.
+- **Avoid:** First and Last pivot strategies for any input that may be sorted or reverse-sorted.
+
+---
+
+## References
+
+1. T. Peters, *timsort.txt*, CPython source tree, 2002. [Online](https://github.com/python/cpython/blob/main/Objects/listsort.txt)
+2. C. A. R. Hoare, "Algorithm 64: Quicksort," *Communications of the ACM*, vol. 4, no. 7, p. 321, 1961.
